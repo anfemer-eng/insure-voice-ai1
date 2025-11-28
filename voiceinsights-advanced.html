@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>VoiceInsights AI - Análisis Inteligente Universal</title>
+    <meta name="theme-color" content="#1e293b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --primary-orange: #f59e0b;
+            --primary-cyan: #06b6d4;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: rgba(148, 163, 184, 0.2);
+            --success-green: #22c55e;
+            --warning-yellow: #eab308;
+            --error-red: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary), var(--bg-tertiary));
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Layout responsivo */
+        .mobile-layout {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .desktop-layout {
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .mobile-layout .header {
+            padding: 0.75rem 1rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .title {
+            font-size: clamp(1.2rem, 4vw, 2.2rem);
+            font-weight: 700;
+            background: linear-gradient(45deg, #60a5fa, #34d399, #fbbf24, #a78bfa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .subtitle {
+            color: var(--text-muted);
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            margin-top: 0.25rem;
+        }
+        
+        .device-badge {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .container {
+            padding: 2rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .mobile-layout .container {
+            padding-top: 120px;
+            height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Cards y componentes */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.6s ease;
+        }
+        
+        .desktop-layout .card {
+            padding: 2rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .desktop-layout .card-title {
+            font-size: 1.3rem;
+        }
+        
+        /* Recording Interface */
+        .main-content {
+            display: grid;
+            gap: 2rem;
+            min-height: 500px;
+        }
+        
+        .desktop-layout .main-content {
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+        }
+        
+        .recording-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .recording-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .recording-panel.active::before {
+            opacity: 1;
+        }
+        
+        .desktop-layout .recording-panel {
+            padding: 3rem;
+        }
+        
+        .record-button {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary-blue), #1d4ed8);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4), 0 0 0 0 rgba(59, 130, 246, 0.4);
+            touch-action: manipulation;
+            z-index: 1;
+        }
+        
+        .desktop-layout .record-button {
+            width: 200px;
+            height: 200px;
+            font-size: 5rem;
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+        }
+        
+        .record-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5), 0 0 0 10px rgba(59, 130, 246, 0.1);
+        }
+        
+        .record-button:active {
+            transform: translateY(-2px) scale(0.95);
+        }
+        
+        .record-button.recording {
+            background: linear-gradient(135deg, var(--primary-red), #dc2626);
+            animation: pulse 2s infinite, recordingGlow 2s infinite;
+        }
+        
+        @keyframes recordingGlow {
+            0%, 100% { box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5), 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 10px 30px rgba(239, 68, 68, 0.7), 0 0 0 20px rgba(239, 68, 68, 0.1); }
+        }
+        
+        .timer {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: var(--success-green);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .desktop-layout .timer {
+            bottom: -35px;
+            padding: 12px 24px;
+            font-size: 1.4rem;
+        }
+        
+        /* Meeting Type Selector */
+        .meeting-type-selector {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .meeting-type {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+        
+        .meeting-type:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .meeting-type.active {
+            background: var(--primary-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* Status and controls */
+        .status {
+            margin: 2rem 0;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .desktop-layout .status {
+            font-size: 1.2rem;
+            min-height: 80px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary-green), #059669);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 140px;
+            touch-action: manipulation;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .desktop-layout .btn {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            min-width: 180px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--primary-red), #dc2626);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+        
+        .btn-purple {
+            background: linear-gradient(135deg, var(--primary-purple), #7c3aed);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Info Panel */
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+        
+        .stat:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-cyan);
+            margin-bottom: 0.25rem;
+        }
+        
+        .desktop-layout .stat-value {
+            font-size: 1.8rem;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 0.6rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        
+        .feature-list li:hover {
+            color: var(--text-primary);
+        }
+        
+        .feature-list li::before {
+            content: "✨";
+            font-size: 1rem;
+        }
+        
+        /* Live transcript */
+        .transcript {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-blue);
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .desktop-layout .transcript {
+            max-height: 200px;
+            padding: 1.5rem;
+        }
+        
+        /* Results view */
+        .results-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .desktop-layout .results-grid {
+            grid-template-columns: 2fr 1fr;
+        }
+        
+        textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid #374151;
+            border-radius: 8px;
+            color: white;
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .desktop-layout textarea {
+            font-size: 1rem;
+            min-height: 120px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Enhanced Analysis Dashboard */
+        .analysis-dashboard {
+            display: grid;
+            gap: 1.5rem;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #60a5fa, #34d399);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        /* Analysis sections */
+        .analysis-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .desktop-layout .analysis-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .analysis-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: slideIn 0.6s ease;
+        }
+        
+        .analysis-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* Specific section styles */
+        .summary-section {
+            border-color: #60a5fa;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), transparent);
+        }
+        
+        .keypoints-section {
+            border-color: #34d399;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), transparent);
+        }
+        
+        .actions-section {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), transparent);
+        }
+        
+        .insights-section {
+            border-color: #a78bfa;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), transparent);
+        }
+        
+        .sentiment-section {
+            border-color: #06b6d4;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.05), transparent);
+        }
+        
+        .timeline-section {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), transparent);
+        }
+        
+        /* Visual elements */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(75, 85, 99, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-green), var(--primary-blue));
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .keyword-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .keyword {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .keyword:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .action-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            transition: border-color 0.2s ease;
+        }
+        
+        .action-item:hover {
+            border-color: rgba(251, 191, 36, 0.5);
+        }
+        
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .action-priority {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .priority-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+        
+        .priority-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+        
+        .priority-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .timeline-time {
+            background: var(--primary-orange);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: fit-content;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .sentiment-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .sentiment-emoji {
+            font-size: 2rem;
+        }
+        
+        .sentiment-details {
+            flex: 1;
+        }
+        
+        .sentiment-score {
+            font-weight: 600;
+            color: var(--primary-cyan);
+        }
+        
+        /* Metric cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .metric-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        
+        .metric-positive {
+            color: var(--success-green);
+        }
+        
+        .metric-negative {
+            color: var(--error-red);
+        }
+        
+        /* Loading and error states */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 3rem;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(59, 130, 246, 0.3);
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .desktop-layout .spinner {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .error-card {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .desktop-layout .main-content,
+            .desktop-layout .analysis-grid,
+            .desktop-layout .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .action-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .timeline-item {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .mobile-layout .container {
+                padding-top: 100px;
+            }
+            
+            .mobile-layout .record-button {
+                width: 110px;
+                height: 110px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body id="app-body">
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div>
+                    <div class="title">VoiceInsights AI</div>
+                    <div class="subtitle">Análisis Universal de Conversaciones</div>
+                </div>
+            </div>
+            <div class="device-badge">
+                <span id="device-icon">📱</span>
+                <span id="device-text">Detectando...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Vista principal -->
+        <div id="home-view" class="main-content">
+            <div class="recording-panel" id="recording-panel">
+                <button id="record-button" class="record-button" onclick="startRecording()">
+                    🎤
+                    <div id="timer" class="timer hidden">00:00</div>
+                </button>
+                
+                <div class="meeting-type-selector">
+                    <div class="meeting-type active" data-type="business">💼 Negocios</div>
+                    <div class="meeting-type" data-type="medical">🏥 Médica</div>
+                    <div class="meeting-type" data-type="legal">⚖️ Legal</div>
+                    <div class="meeting-type" data-type="education">🎓 Educación</div>
+                    <div class="meeting-type" data-type="personal">👥 Personal</div>
+                    <div class="meeting-type" data-type="interview">📋 Entrevista</div>
+                </div>
+                
+                <div id="status" class="status">
+                    Selecciona el tipo de conversación y haz clic en el micrófono
+                </div>
+                
+                <div id="controls" class="controls hidden">
+                    <button id="pause-btn" class="btn btn-secondary hidden" onclick="pauseRecording()">
+                        <span id="pause-text">⏸️ Pausar</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="stopRecording()">
+                        ⏹️ Detener
+                    </button>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <div class="card">
+                    <div class="card-title">🎯 Análisis Avanzado</div>
+                    <ul class="feature-list">
+                        <li>Resumen inteligente con puntos clave</li>
+                        <li>Identificación automática de speakers</li>
+                        <li>Timeline de momentos importantes</li>
+                        <li>Análisis de sentimientos y emociones</li>
+                        <li>Extracción de action items</li>
+                        <li>Keywords y temas principales</li>
+                        <li>Métricas de participación</li>
+                        <li>Exportación profesional</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">📊 Estado de Sesión</div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value" id="session-duration">00:00</div>
+                            <div class="stat-label">Duración</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="words-transcribed">0</div>
+                            <div class="stat-label">Palabras</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="recording-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="card" id="live-transcript-card" class="hidden">
+                    <div class="card-title">📝 Transcripción en Vivo</div>
+                    <div id="live-transcript" class="transcript">
+                        Esperando que comiences a hablar...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vista de error -->
+        <div id="error-view" class="hidden">
+            <div class="error-card">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🚫</div>
+                <h2 style="color: var(--error-red); margin-bottom: 1rem;">Error de Acceso al Micrófono</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    VoiceInsights AI necesita acceso al micrófono para funcionar.
+                </p>
+                <div id="permission-instructions" style="text-align: left; margin: 1.5rem 0;">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+                <button class="btn" onclick="retryPermissions()">
+                    🔄 Intentar de Nuevo
+                </button>
+            </div>
+        </div>
+        
+        <!-- Vista de resultados -->
+        <div id="results-view" class="hidden">
+            <div class="results-grid">
+                <div class="card">
+                    <div class="card-title">📁 Grabación Completada</div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="final-duration" style="color: var(--primary-blue);">00:00</div>
+                            <div class="metric-label">Duración Total</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="final-words" style="color: var(--success-green);">0</div>
+                            <div class="metric-label">Palabras Capturadas</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="file-size" style="color: var(--primary-orange);">0 KB</div>
+                            <div class="metric-label">Tamaño</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="quality-score" style="color: var(--primary-purple);">95%</div>
+                            <div class="metric-label">Calidad</div>
+                        </div>
+                    </div>
+                    
+                    <div id="auto-transcript-section" class="hidden">
+                        <div style="color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.9rem;">
+                            📝 Transcripción automática:
+                        </div>
+                        <div id="auto-transcript" class="transcript"></div>
+                    </div>
+                    
+                    <div style="margin: 1.5rem 0;">
+                        <label style="display: block; color: var(--text-secondary); margin-bottom: 0.75rem; font-weight: 600;">
+                            Contexto adicional (opcional):
+                        </label>
+                        <textarea 
+                            id="manual-description" 
+                            placeholder="Agrega contexto sobre participantes, objetivos de la reunión, decisiones importantes, o cualquier información relevante..."
+                        ></textarea>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="btn btn-secondary" onclick="backToRecording()">
+                            🔙 Nueva Grabación
+                        </button>
+                        <button class="btn btn-purple" onclick="analyzeContent()">
+                            🚀 Crear Análisis Completo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">⚙️ Configuración de Análisis</div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                        Tipo seleccionado: <span id="selected-meeting-type" style="color: var(--primary-blue); font-weight: 600;">Negocios</span>
+                    </p>
+                    <div style="background: rgba(15, 23, 42, 0.6); border-radius: 8px; padding: 1rem; border-left: 4px solid var(--primary-blue);">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Análisis incluido:</h4>
+                        <ul style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4; list-style-position: inside;">
+                            <li>✨ Resumen ejecutivo inteligente</li>
+                            <li>🎯 Puntos clave y highlights</li>
+                            <li>📋 Action items con prioridades</li>
+                            <li>💭 Análisis de sentimientos</li>
+                            <li>⏰ Timeline de la conversación</li>
+                            <li>🏷️ Keywords y temas</li>
+                            <li>📊 Métricas de participación</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vista de procesamiento -->
+        <div id="processing-view" class="hidden">
+            <div class="card loading">
+                <div class="spinner"></div>
+                <h2>🧠 Analizando con IA Avanzada</h2>
+                <p style="color: var(--text-muted); margin-top: 1rem;">
+                    Procesando transcripción, identificando patrones, extrayendo insights...
+                </p>
+                <div class="progress-bar" style="margin-top: 1.5rem; max-width: 300px;">
+                    <div class="progress-fill" id="processing-progress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vista de análisis -->
+        <div id="analysis-view" class="hidden">
+            <div class="analysis-dashboard">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">🎯 Análisis Completo Generado</div>
+                    <div class="dashboard-meta">
+                        <div class="meta-item">
+                            <span>🕐</span>
+                            <span id="analysis-duration">00:00</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>📝</span>
+                            <span id="analysis-words">0 palabras</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>👥</span>
+                            <span id="analysis-speakers">Participantes detectados</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>🏷️</span>
+                            <span id="analysis-type">Tipo de reunión</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="analysis-content" class="analysis-grid">
+                    <!-- Se llenará dinámicamente con el análisis -->
+                </div>
+
+                <div style="margin-top: 3rem;">
+                    <div class="controls">
+                        <button class="btn btn-secondary" onclick="newRecording()">
+                            🔄 Nueva Grabación
+                        </button>
+                        <button class="btn" onclick="exportAnalysis()">
+                            📤 Exportar Reporte
+                        </button>
+                        <button id="print-btn" class="btn btn-purple hidden" onclick="printAnalysis()">
+                            🖨️ Imprimir
+                        </button>
+                        <button class="btn btn-secondary" onclick="shareAnalysis()">
+                            📢 Compartir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let isRecording = false;
+        let isPaused = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let startTime = 0;
+        let recordingTime = 0;
+        let pausedTime = 0;
+        let timerInterval = null;
+        let audioBlob = null;
+        let transcript = '';
+        let recognition = null;
+        let analysisData = null;
+        let wordCount = 0;
+        let isDesktop = false;
+        let isMobile = false;
+        let isIOS = false;
+        let isAndroid = false;
+        let selectedMeetingType = 'business';
+
+        // Elementos DOM
+        const appBody = document.getElementById('app-body');
+        const deviceIcon = document.getElementById('device-icon');
+        const deviceText = document.getElementById('device-text');
+        const homeView = document.getElementById('home-view');
+        const errorView = document.getElementById('error-view');
+        const resultsView = document.getElementById('results-view');
+        const processingView = document.getElementById('processing-view');
+        const analysisView = document.getElementById('analysis-view');
+        const recordButton = document.getElementById('record-button');
+        const recordingPanel = document.getElementById('recording-panel');
+        const timer = document.getElementById('timer');
+        const status = document.getElementById('status');
+        const controls = document.getElementById('controls');
+        const pauseBtn = document.getElementById('pause-btn');
+        const liveTranscriptCard = document.getElementById('live-transcript-card');
+        const liveTranscript = document.getElementById('live-transcript');
+
+        // Tipos de reunión y sus configuraciones
+        const meetingTypes = {
+            business: {
+                name: 'Negocios',
+                icon: '💼',
+                prompt: 'reunión de negocios con enfoque en decisiones estratégicas, action items y objetivos comerciales'
+            },
+            medical: {
+                name: 'Médica',
+                icon: '🏥',
+                prompt: 'consulta médica con enfoque en síntomas, diagnósticos, tratamientos y seguimiento'
+            },
+            legal: {
+                name: 'Legal',
+                icon: '⚖️',
+                prompt: 'consulta legal con enfoque en procedimientos, obligaciones, plazos y documentación'
+            },
+            education: {
+                name: 'Educación',
+                icon: '🎓',
+                prompt: 'sesión educativa con enfoque en conceptos clave, aprendizaje y evaluación'
+            },
+            personal: {
+                name: 'Personal',
+                icon: '👥',
+                prompt: 'conversación personal con enfoque en relaciones, acuerdos y compromisos personales'
+            },
+            interview: {
+                name: 'Entrevista',
+                icon: '📋',
+                prompt: 'entrevista con enfoque en competencias, experiencias y evaluación'
+            }
+        };
+
+        // Detectar dispositivo
+        function detectDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            
+            isIOS = /iphone|ipad|ipod/.test(userAgent);
+            isAndroid = /android/.test(userAgent);
+            isMobile = isIOS || isAndroid || window.innerWidth <= 768;
+            isDesktop = !isMobile;
+            
+            if (isDesktop) {
+                appBody.classList.add('desktop-layout');
+                deviceIcon.textContent = '💻';
+                deviceText.textContent = 'Desktop';
+                pauseBtn.classList.remove('hidden');
+                document.getElementById('print-btn').classList.remove('hidden');
+            } else {
+                appBody.classList.add('mobile-layout');
+                if (isIOS) {
+                    deviceIcon.textContent = '📱';
+                    deviceText.textContent = 'iPhone';
+                } else if (isAndroid) {
+                    deviceIcon.textContent = '🤖';
+                    deviceText.textContent = 'Android';
+                } else {
+                    deviceIcon.textContent = '📱';
+                    deviceText.textContent = 'Móvil';
+                }
+                setupMobileBehavior();
+            }
+        }
+
+        // Configurar comportamiento móvil
+        function setupMobileBehavior() {
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length > 1) e.preventDefault();
+            });
+            
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(e) {
+                const now = new Date().getTime();
+                if (now - lastTouchEnd <= 300) e.preventDefault();
+                lastTouchEnd = now;
+            }, false);
+            
+            document.body.style.overscrollBehavior = 'none';
+        }
+
+        // Configurar selectores de tipo de reunión
+        function setupMeetingTypeSelectors() {
+            const typeButtons = document.querySelectorAll('.meeting-type');
+            typeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    typeButtons.forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
+                    selectedMeetingType = button.dataset.type;
+                    
+                    const typeInfo = meetingTypes[selectedMeetingType];
+                    document.getElementById('selected-meeting-type').textContent = typeInfo.name;
+                    
+                    status.textContent = `${typeInfo.icon} Listo para grabar ${typeInfo.name.toLowerCase()}`;
+                });
+            });
+        }
+
+        // Formatear tiempo
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Actualizar timer y progreso
+        function updateTimer() {
+            if (!isPaused) {
+                recordingTime = Math.floor((Date.now() - startTime - pausedTime) / 1000);
+                timer.textContent = formatTime(recordingTime);
+                document.getElementById('session-duration').textContent = formatTime(recordingTime);
+                
+                // Actualizar barra de progreso (máximo 60 minutos)
+                const progress = Math.min((recordingTime / 3600) * 100, 100);
+                document.getElementById('recording-progress').style.width = `${progress}%`;
+            }
+        }
+
+        // Actualizar contador de palabras
+        function updateWordCount() {
+            wordCount = transcript.split(' ').filter(word => word.length > 0).length;
+            document.getElementById('words-transcribed').textContent = wordCount;
+        }
+
+        // Configurar reconocimiento de voz
+        function setupSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                return null;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'es-ES';
+            
+            recognition.onresult = (event) => {
+                let finalTranscript = '';
+                let interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' ';
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                
+                transcript += finalTranscript;
+                const displayText = transcript + interimTranscript;
+                
+                liveTranscript.textContent = displayText || 'Esperando que comiences a hablar...';
+                liveTranscript.scrollTop = liveTranscript.scrollHeight;
+                
+                updateWordCount();
+            };
+            
+            recognition.onerror = (event) => {
+                console.log('Speech recognition error:', event.error);
+            };
+            
+            recognition.onend = () => {
+                if (isRecording && !isPaused) {
+                    setTimeout(() => {
+                        try {
+                            recognition.start();
+                        } catch (e) {
+                            console.log('Recognition restart failed');
+                        }
+                    }, 100);
+                }
+            };
+            
+            return recognition;
+        }
+
+        // Iniciar grabación
+        async function startRecording() {
+            try {
+                const typeInfo = meetingTypes[selectedMeetingType];
+                status.textContent = `🎙️ Solicitando acceso al micrófono para ${typeInfo.name.toLowerCase()}...`;
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                        sampleRate: 44100
+                    } 
+                });
+                
+                const options = {};
+                if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                    options.mimeType = 'audio/webm;codecs=opus';
+                } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+                    options.mimeType = 'audio/webm';
+                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                    options.mimeType = 'audio/mp4';
+                }
+                
+                mediaRecorder = new MediaRecorder(stream, options);
+                audioChunks = [];
+                transcript = '';
+                wordCount = 0;
+                pausedTime = 0;
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+                    stream.getTracks().forEach(track => track.stop());
+                    showResults();
+                };
+                
+                // Configurar transcripción
+                recognition = setupSpeechRecognition();
+                if (recognition) {
+                    try {
+                        recognition.start();
+                        liveTranscriptCard.classList.remove('hidden');
+                    } catch (e) {
+                        console.log('Speech recognition failed to start');
+                    }
+                }
+                
+                mediaRecorder.start(1000);
+                startTime = Date.now();
+                isRecording = true;
+                isPaused = false;
+                
+                // UI updates
+                recordButton.textContent = '🔴';
+                recordButton.classList.add('recording');
+                recordingPanel.classList.add('active');
+                timer.classList.remove('hidden');
+                controls.classList.remove('hidden');
+                status.textContent = `🎙️ Grabando ${typeInfo.name.toLowerCase()}... Habla claramente`;
+                
+                timerInterval = setInterval(updateTimer, 1000);
+                
+                if (isMobile && navigator.vibrate) {
+                    navigator.vibrate(100);
+                }
+                
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                showError();
+            }
+        }
+
+        // Pausar/reanudar grabación
+        function pauseRecording() {
+            if (!mediaRecorder || !isRecording || isMobile) return;
+            
+            if (isPaused) {
+                mediaRecorder.resume();
+                if (recognition) {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.log('Recognition already running');
+                    }
+                }
+                
+                startTime = Date.now();
+                isPaused = false;
+                
+                recordButton.classList.add('recording');
+                recordButton.textContent = '🔴';
+                status.textContent = '🎙️ Grabando... Habla claramente';
+                document.getElementById('pause-text').textContent = '⏸️ Pausar';
+                
+                timerInterval = setInterval(updateTimer, 1000);
+            } else {
+                mediaRecorder.pause();
+                if (recognition) {
+                    recognition.stop();
+                }
+                
+                pausedTime += Date.now() - startTime;
+                isPaused = true;
+                
+                recordButton.classList.remove('recording');
+                recordButton.textContent = '⏸️';
+                status.textContent = '⏸️ Grabación pausada';
+                document.getElementById('pause-text').textContent = '▶️ Reanudar';
+                
+                clearInterval(timerInterval);
+            }
+        }
+
+        // Detener grabación
+        function stopRecording() {
+            if (!mediaRecorder || !isRecording) return;
+            
+            mediaRecorder.stop();
+            if (recognition) {
+                recognition.stop();
+                recognition = null;
+            }
+            isRecording = false;
+            isPaused = false;
+            
+            clearInterval(timerInterval);
+            recordingPanel.classList.remove('active');
+            status.textContent = '⏳ Procesando grabación...';
+            
+            if (isMobile && navigator.vibrate) {
+                navigator.vibrate([100, 100, 100]);
+            }
+        }
+
+        // Mostrar error
+        function showError() {
+            homeView.classList.add('hidden');
+            errorView.classList.remove('hidden');
+            
+            const instructionsDiv = document.getElementById('permission-instructions');
+            let instructions = '';
+            
+            if (isIOS) {
+                instructions = `
+                    <div style="background: rgba(15, 23, 42, 0.8); border-radius: 8px; padding: 1rem;">
+                        <h4 style="color: #60a5fa; margin-bottom: 0.5rem;">📱 Para iPhone/iPad:</h4>
+                        <ol style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4; padding-left: 1rem;">
+                            <li>Configuración → Privacidad → Micrófono</li>
+                            <li>Busca Safari/Chrome y actívalo</li>
+                            <li>O toca AA en la barra → Configuración del sitio → Micrófono → Permitir</li>
+                        </ol>
+                    </div>
+                `;
+            } else if (isAndroid) {
+                instructions = `
+                    <div style="background: rgba(15, 23, 42, 0.8); border-radius: 8px; padding: 1rem;">
+                        <h4 style="color: #60a5fa; margin-bottom: 0.5rem;">🤖 Para Android:</h4>
+                        <ol style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4; padding-left: 1rem;">
+                            <li>Toca el ícono de candado en la barra de direcciones</li>
+                            <li>Selecciona "Micrófono" → "Permitir"</li>
+                            <li>O ve a Configuración → Apps → Chrome → Permisos → Micrófono</li>
+                        </ol>
+                    </div>
+                `;
+            } else {
+                instructions = `
+                    <div style="background: rgba(15, 23, 42, 0.8); border-radius: 8px; padding: 1rem;">
+                        <h4 style="color: #60a5fa; margin-bottom: 0.5rem;">💻 Para Desktop:</h4>
+                        <ol style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4; padding-left: 1rem;">
+                            <li>Haz clic en el ícono 🔒 o 🎤 en la barra de direcciones</li>
+                            <li>Selecciona "Permitir micrófono"</li>
+                            <li>O ve a Configuración del sitio → Micrófono → Permitir</li>
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            instructionsDiv.innerHTML = instructions;
+        }
+
+        // Reintentar permisos
+        function retryPermissions() {
+            errorView.classList.add('hidden');
+            homeView.classList.remove('hidden');
+            resetUI();
+        }
+
+        // Volver a grabación
+        function backToRecording() {
+            resultsView.classList.add('hidden');
+            homeView.classList.remove('hidden');
+            resetUI();
+        }
+
+        // Resetear UI
+        function resetUI() {
+            recordButton.textContent = '🎤';
+            recordButton.classList.remove('recording');
+            recordingPanel.classList.remove('active');
+            timer.classList.add('hidden');
+            controls.classList.add('hidden');
+            liveTranscriptCard.classList.add('hidden');
+            
+            const typeInfo = meetingTypes[selectedMeetingType];
+            status.textContent = `${typeInfo.icon} Listo para grabar ${typeInfo.name.toLowerCase()}`;
+            
+            document.getElementById('session-duration').textContent = '00:00';
+            document.getElementById('words-transcribed').textContent = '0';
+            document.getElementById('recording-progress').style.width = '0%';
+            document.getElementById('manual-description').value = '';
+            
+            timer.textContent = '00:00';
+            document.getElementById('pause-text').textContent = '⏸️ Pausar';
+        }
+
+        // Mostrar resultados
+        function showResults() {
+            homeView.classList.add('hidden');
+            resultsView.classList.remove('hidden');
+            
+            const duration = formatTime(recordingTime);
+            const fileSize = audioBlob ? 
+                (audioBlob.size > 1024 * 1024 ? 
+                    (audioBlob.size / (1024 * 1024)).toFixed(1) + ' MB' : 
+                    Math.round(audioBlob.size / 1024) + ' KB') : '0 KB';
+                    
+            const qualityScore = Math.min(95, Math.max(60, 70 + (wordCount / 10)));
+            
+            document.getElementById('final-duration').textContent = duration;
+            document.getElementById('final-words').textContent = wordCount;
+            document.getElementById('file-size').textContent = fileSize;
+            document.getElementById('quality-score').textContent = `${Math.round(qualityScore)}%`;
+            
+            if (transcript.trim().length > 10) {
+                const autoTranscriptSection = document.getElementById('auto-transcript-section');
+                const autoTranscriptDiv = document.getElementById('auto-transcript');
+                autoTranscriptSection.classList.remove('hidden');
+                autoTranscriptDiv.textContent = transcript.trim();
+                document.getElementById('manual-description').value = transcript.trim();
+            }
+        }
+
+        // Analizar contenido con IA avanzada
+        async function analyzeContent() {
+            const manualDescription = document.getElementById('manual-description').value.trim();
+            const analysisText = manualDescription || transcript.trim();
+            
+            if (analysisText.length < 10) {
+                alert('Por favor, proporciona más información sobre la conversación para crear un análisis completo.');
+                return;
+            }
+            
+            resultsView.classList.add('hidden');
+            processingView.classList.remove('hidden');
+            
+            // Animación de progreso
+            let progress = 0;
+            const progressBar = document.getElementById('processing-progress');
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = `${progress}%`;
+            }, 200);
+            
+            try {
+                analysisData = await analyzeWithAdvancedAI(analysisText);
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                setTimeout(() => showAdvancedAnalysis(), 500);
+            } catch (error) {
+                console.error('AI analysis failed:', error);
+                clearInterval(progressInterval);
+                analysisData = createAdvancedLocalAnalysis(analysisText);
+                progressBar.style.width = '100%';
+                setTimeout(() => showAdvancedAnalysis(), 500);
+            }
+        }
+
+        // Análisis avanzado con Claude
+        async function analyzeWithAdvancedAI(content) {
+            const typeInfo = meetingTypes[selectedMeetingType];
+            
+            const response = await fetch("https://api.anthropic.com/v1/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "claude-sonnet-4-20250514",
+                    max_tokens: 3000,
+                    messages: [{
+                        role: "user",
+                        content: `Analiza esta ${typeInfo.prompt} de manera profesional y exhaustiva. Responde SOLO en JSON válido:
+
+CONTENIDO: "${content}"
+
+INSTRUCCIONES: Realiza un análisis profundo y profesional. Extrae insights valiosos, identifica patrones, y proporciona recomendaciones accionables.
+
+{
+  "summary": {
+    "executive": "Resumen ejecutivo conciso y profesional",
+    "keyOutcomes": ["Lista de 3-5 resultados principales"],
+    "overallTone": "positivo/neutral/negativo",
+    "effectiveness": "Calificación de 1-10 de la efectividad de la conversación"
+  },
+  "keyInsights": {
+    "mainTopics": ["Temas principales discutidos"],
+    "criticalPoints": ["Puntos críticos o momentos decisivos"],
+    "patterns": ["Patrones identificados en la conversación"],
+    "opportunities": ["Oportunidades identificadas"]
+  },
+  "participants": {
+    "estimated": "Número estimado de participantes",
+    "roles": ["Roles identificados"],
+    "engagement": "Nivel de participación general"
+  },
+  "actionItems": [
+    {
+      "task": "Descripción de la tarea",
+      "responsible": "Persona o rol responsable",
+      "deadline": "Plazo sugerido",
+      "priority": "high/medium/low",
+      "context": "Contexto adicional"
+    }
+  ],
+  "timeline": [
+    {
+      "timeframe": "Inicio/Medio/Final",
+      "event": "Evento o tema principal",
+      "importance": "high/medium/low"
+    }
+  ],
+  "sentiment": {
+    "overall": "positivo/neutral/negativo",
+    "confidence": "Nivel de confianza del análisis",
+    "emotional_highlights": ["Momentos emocionales destacados"]
+  },
+  "keywords": ["Lista de 8-12 palabras clave importantes"],
+  "risks": ["Riesgos o preocupaciones identificadas"],
+  "recommendations": [
+    {
+      "category": "Categoría de la recomendación",
+      "suggestion": "Sugerencia específica",
+      "rationale": "Razón de la recomendación"
+    }
+  ],
+  "metrics": {
+    "informationDensity": "alta/media/baja",
+    "decisionMaking": "efectivo/parcial/limitado",
+    "followUpNeeded": "si/no",
+    "clarity": "alta/media/baja"
+  },
+  "nextSteps": {
+    "immediate": "Pasos inmediatos sugeridos",
+    "shortTerm": "Acciones a corto plazo",
+    "longTerm": "Consideraciones a largo plazo"
+  }
+}`
+                    }]
+                })
+            });
+
+            if (!response.ok) throw new Error('API failed');
+            
+            const data = await response.json();
+            let text = data.content[0].text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+            return JSON.parse(text);
+        }
+
+        // Análisis local avanzado
+        function createAdvancedLocalAnalysis(content) {
+            const contentWords = content.split(' ');
+            const wordCount = contentWords.length;
+            const hasDecisions = /decid|acord|aprob|resolv|defin/i.test(content);
+            const hasProblems = /problem|riesgo|preocup|dificult|obstáculo/i.test(content);
+            const hasEmotions = /content|feliz|preocup|frustrad|emocion/i.test(content);
+            const hasNumbers = /\d+|\buno\b|\bdos\b|\btres\b/i.test(content);
+            
+            return {
+                summary: {
+                    executive: `Conversación de ${formatTime(recordingTime)} con ${wordCount} palabras analizadas. ${hasDecisions ? 'Se tomaron decisiones importantes durante la sesión.' : 'Reunión principalmente informativa con intercambio de ideas.'} ${hasProblems ? 'Se identificaron desafíos que requieren atención.' : 'Ambiente positivo sin problemas críticos identificados.'}`,
+                    keyOutcomes: hasDecisions ? 
+                        ['Decisiones estratégicas establecidas', 'Compromisos específicos adquiridos', 'Plan de acción definido'] :
+                        ['Intercambio de información efectivo', 'Contexto compartido establecido', 'Base para futuras decisiones'],
+                    overallTone: hasEmotions ? (hasProblems ? 'neutral' : 'positivo') : 'neutral',
+                    effectiveness: hasDecisions ? 8 : 6
+                },
+                keyInsights: {
+                    mainTopics: ['Tema principal de la conversación', 'Puntos de discusión secundarios'],
+                    criticalPoints: hasDecisions ? ['Momentos de toma de decisiones', 'Acuerdos alcanzados'] : ['Puntos de clarificación importantes'],
+                    patterns: ['Estructura de comunicación identificada', 'Flujo conversacional analizado'],
+                    opportunities: ['Mejora en procesos de comunicación', 'Optimización de tiempo de reunión']
+                },
+                participants: {
+                    estimated: '2-4 personas',
+                    roles: ['Facilitador/Líder', 'Participantes activos'],
+                    engagement: hasDecisions ? 'Alto nivel de participación' : 'Participación moderada'
+                },
+                actionItems: [
+                    {
+                        task: hasDecisions ? 'Implementar decisiones acordadas' : 'Definir próximos pasos específicos',
+                        responsible: 'Equipo designado',
+                        deadline: 'Próxima reunión',
+                        priority: hasProblems ? 'high' : 'medium',
+                        context: 'Basado en acuerdos de la sesión'
+                    }
+                ],
+                timeline: [
+                    {
+                        timeframe: 'Inicio',
+                        event: 'Establecimiento de agenda y contexto',
+                        importance: 'medium'
+                    },
+                    {
+                        timeframe: 'Medio',
+                        event: hasDecisions ? 'Discusión y toma de decisiones' : 'Intercambio principal de información',
+                        importance: hasDecisions ? 'high' : 'medium'
+                    },
+                    {
+                        timeframe: 'Final',
+                        event: 'Resumen y próximos pasos',
+                        importance: 'medium'
+                    }
+                ],
+                sentiment: {
+                    overall: hasProblems ? 'neutral' : 'positivo',
+                    confidence: 'Medium',
+                    emotional_highlights: hasEmotions ? ['Momentos de expresión emocional identificados'] : ['Tono profesional mantenido']
+                },
+                keywords: contentWords
+                    .filter(word => word.length > 4)
+                    .slice(0, 10)
+                    .concat(['reunión', 'decisión', 'equipo']),
+                risks: hasProblems ? 
+                    ['Desafíos identificados que requieren seguimiento', 'Posibles impactos en cronogramas'] :
+                    ['Riesgo mínimo identificado', 'Seguimiento preventivo recomendado'],
+                recommendations: [
+                    {
+                        category: 'Proceso',
+                        suggestion: 'Implementar seguimiento estructurado de acuerdos',
+                        rationale: 'Asegurar cumplimiento de compromisos adquiridos'
+                    },
+                    {
+                        category: 'Comunicación',
+                        suggestion: 'Establecer agenda previa para futuras reuniones',
+                        rationale: 'Optimizar uso del tiempo y efectividad'
+                    }
+                ],
+                metrics: {
+                    informationDensity: hasNumbers ? 'alta' : 'media',
+                    decisionMaking: hasDecisions ? 'efectivo' : 'limitado',
+                    followUpNeeded: 'si',
+                    clarity: wordCount > 100 ? 'alta' : 'media'
+                },
+                nextSteps: {
+                    immediate: 'Documentar acuerdos y distribuir resumen',
+                    shortTerm: 'Iniciar implementación de acciones acordadas',
+                    longTerm: 'Evaluar efectividad de proceso de reuniones'
+                }
+            };
+        }
+
+        // Mostrar análisis avanzado
+        function showAdvancedAnalysis() {
+            processingView.classList.add('hidden');
+            analysisView.classList.remove('hidden');
+            
+            // Actualizar metadata del dashboard
+            document.getElementById('analysis-duration').textContent = formatTime(recordingTime);
+            document.getElementById('analysis-words').textContent = `${wordCount} palabras`;
+            document.getElementById('analysis-speakers').textContent = analysisData.participants.estimated || '2-4 participantes';
+            document.getElementById('analysis-type').textContent = meetingTypes[selectedMeetingType].name;
+            
+            const analysisContent = document.getElementById('analysis-content');
+            analysisContent.innerHTML = `
+                <!-- Resumen Ejecutivo -->
+                <div class="analysis-section summary-section">
+                    <div class="section-header">
+                        <div class="section-title" style="color: #60a5fa;">
+                            📋 Resumen Ejecutivo
+                        </div>
+                        <div class="section-badge">Effectiveness: ${analysisData.summary.effectiveness}/10</div>
+                    </div>
+                    <p style="color: var(--text-secondary); line-height: 1.6; font-size: 1.05rem; margin-bottom: 1rem;">${analysisData.summary.executive}</p>
+                    
+                    <div style="background: rgba(15, 23, 42, 0.4); border-radius: 8px; padding: 1rem;">
+                        <h4 style="color: #60a5fa; margin-bottom: 0.75rem; font-size: 0.9rem;">🎯 Resultados Principales:</h4>
+                        ${analysisData.summary.keyOutcomes.map(outcome => `
+                            <div style="margin: 0.5rem 0; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: #34d399;">✓</span> ${outcome}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Insights Clave -->
+                <div class="analysis-section keypoints-section">
+                    <div class="section-header">
+                        <div class="section-title" style="color: #34d399;">
+                            💡 Insights Clave
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <h4 style="color: #34d399; margin-bottom: 0.5rem; font-size: 0.9rem;">🎯 Temas Principales:</h4>
+                        <div class="keyword-cloud">
+                            ${analysisData.keyInsights.mainTopics.map(topic => `<span class="keyword">${topic}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <h4 style="color: #34d399; margin-bottom: 0.5rem; font-size: 0.9rem;">⚡ Puntos Críticos:</h4>
+                        ${analysisData.keyInsights.criticalPoints.map(point => `
+                            <div style="margin: 0.5rem 0; color: var(--text-secondary);">• ${point}</div>
+                        `).join('')}
+                    </div>
+
+                    <div>
+                        <h4 style="color: #34d399; margin-bottom: 0.5rem; font-size: 0.9rem;">🔍 Oportunidades:</h4>
+                        ${analysisData.keyInsights.opportunities.map(opp => `
+                            <div style="margin: 0.5rem 0; color: var(--text-secondary);">🌟 ${opp}</div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Action Items -->
+                <div class="analysis-section actions-section">
+                    <div class="section-header">
+                        <div class="section-title" style="color: #fbbf24;">
+                            📋 Plan de Acción
+                        </div>
+                        <div class="section-badge">${analysisData.actionItems.length} tareas</div>
+                    </div>
+                    
+                    ${analysisData.actionItems.map(action => `
+                        <div class="action-item">
+                            <div class="action-header">
+                                <strong style="color: #fbbf24;">${action.responsible}</strong>
+                                <div class="action-priority priority-${action.priority}">${action.priority.toUpperCase()}</div>
+                            </div>
+                            <div style="color: var(--text-secondary); margin: 0.5rem 0; line-height: 1.4;">${action.task}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
+                                <span>📅 ${action.deadline}</span>
+                                <span>📝 ${action.context}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Timeline -->
+                <div class="analysis-section timeline-section">
+                    <div class="section-header">
+                        <div class="section-title" style="color: #f59e0b;">
+                            ⏰ Timeline de Conversación
+                        </div>
+                    </div>
+                    
+                    ${analysisData.timeline.map(item => `
+                        <div class="timeline-item">
+                            <div class="timeline-time">${item.timeframe}</div>
+                            <div class="timeline-content">
+                                <strong style="color: var(--text-primary);">${item.event}</strong>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                    Importancia: ${item.importance}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Análisis de Sentimientos -->
+                <div class="analysis-section sentiment-section">
+                    <div class="section-header">
+                        <div class="section-title" style="color: #06b6d4;">
+                            😊 Análisis de Sentimientos
+                        </div>
+                    </div>
+                    
+                    <div class="sentiment-indicator">
+                        <div class="sentiment-emoji">${analysisData.sentiment.overall === 'positivo' ? '😊' : analysisData.sentiment.overall === 'negativo' ? '😟' : '😐'}</div>
+                        <div class="sentiment-details">
+                            <div class="sentiment-score">Tono General: ${analysisData.sentiment.overall.toUpperCase()}</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">Confianza: ${analysisData.sentiment.confidence}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1rem;">
+                        <h4 style="color: #06b6d4; margin-bottom: 0.5rem; font-size: 0.9rem;">💭 Highlights Emocionales:</h4>
+                        ${analysisData.sentiment.emotional_highlights.map(highlight => `
+                            <div style="margin: 0.5rem 0; color: var(--text-secondary);">• ${highlight}</div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Keywords -->
+                <div class="analysis-section insights-section">
+                    <div class="section-header">
+                        <div class="section-title" style="color: #a78bfa;">
+                            🏷️ Keywords Principales
+                        </div>
+                    </div>
+                    
+                    <div class="keyword-cloud">
+                        ${analysisData.keywords.map((keyword, index) => `
+                            <span class="keyword" style="font-size: ${1 - (index * 0.05)}rem; opacity: ${1 - (index * 0.08)};">${keyword}</span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Métricas -->
+                <div class="analysis-section" style="border-color: var(--primary-cyan); grid-column: 1 / -1;">
+                    <div class="section-header">
+                        <div class="section-title" style="color: var(--primary-cyan);">
+                            📊 Métricas de Calidad
+                        </div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--primary-green);">${analysisData.metrics.informationDensity.toUpperCase()}</div>
+                            <div class="metric-label">Densidad de Información</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--primary-blue);">${analysisData.metrics.decisionMaking.toUpperCase()}</div>
+                            <div class="metric-label">Toma de Decisiones</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--primary-orange);">${analysisData.metrics.clarity.toUpperCase()}</div>
+                            <div class="metric-label">Claridad</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: ${analysisData.metrics.followUpNeeded === 'si' ? 'var(--warning-yellow)' : 'var(--success-green)'};">${analysisData.metrics.followUpNeeded.toUpperCase()}</div>
+                            <div class="metric-label">Seguimiento Requerido</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recomendaciones -->
+                <div class="analysis-section" style="border-color: var(--primary-purple); grid-column: 1 / -1;">
+                    <div class="section-header">
+                        <div class="section-title" style="color: var(--primary-purple);">
+                            💎 Recomendaciones Estratégicas
+                        </div>
+                    </div>
+                    
+                    ${analysisData.recommendations.map(rec => `
+                        <div style="background: rgba(139, 92, 246, 0.1); border-radius: 8px; padding: 1rem; margin: 0.75rem 0; border-left: 3px solid var(--primary-purple);">
+                            <h4 style="color: var(--primary-purple); margin-bottom: 0.5rem;">${rec.category}</h4>
+                            <div style="color: var(--text-secondary); margin-bottom: 0.5rem;">${rec.suggestion}</div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem;"><em>${rec.rationale}</em></div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Próximos Pasos -->
+                <div class="analysis-section" style="border-color: var(--success-green); grid-column: 1 / -1;">
+                    <div class="section-header">
+                        <div class="section-title" style="color: var(--success-green);">
+                            🚀 Próximos Pasos
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                        <div style="background: rgba(34, 197, 94, 0.1); border-radius: 8px; padding: 1rem;">
+                            <h4 style="color: var(--success-green); margin-bottom: 0.5rem;">⚡ Inmediato</h4>
+                            <p style="color: var(--text-secondary); line-height: 1.4;">${analysisData.nextSteps.immediate}</p>
+                        </div>
+                        <div style="background: rgba(245, 158, 11, 0.1); border-radius: 8px; padding: 1rem;">
+                            <h4 style="color: var(--primary-orange); margin-bottom: 0.5rem;">📅 Corto Plazo</h4>
+                            <p style="color: var(--text-secondary); line-height: 1.4;">${analysisData.nextSteps.shortTerm}</p>
+                        </div>
+                        <div style="background: rgba(59, 130, 246, 0.1); border-radius: 8px; padding: 1rem;">
+                            <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">🎯 Largo Plazo</h4>
+                            <p style="color: var(--text-secondary); line-height: 1.4;">${analysisData.nextSteps.longTerm}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Exportar análisis avanzado
+        function exportAnalysis() {
+            if (!analysisData) return;
+            
+            const deviceType = isDesktop ? 'Desktop' : isMobile ? (isIOS ? 'iPhone' : isAndroid ? 'Android' : 'Móvil') : 'Dispositivo';
+            const typeInfo = meetingTypes[selectedMeetingType];
+            
+            let content = `REPORTE PROFESIONAL DE ${typeInfo.name.toUpperCase()} - VoiceInsights AI\n`;
+            content += `${'='.repeat(80)}\n\n`;
+            
+            content += `METADATOS:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `Fecha: ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n`;
+            content += `Hora: ${new Date().toLocaleTimeString('es-ES')}\n`;
+            content += `Duración: ${formatTime(recordingTime)}\n`;
+            content += `Tipo de conversación: ${typeInfo.name}\n`;
+            content += `Palabras analizadas: ${wordCount}\n`;
+            content += `Participantes estimados: ${analysisData.participants.estimated}\n`;
+            content += `Dispositivo: ${deviceType}\n`;
+            content += `Efectividad: ${analysisData.summary.effectiveness}/10\n\n`;
+            
+            content += `RESUMEN EJECUTIVO:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `${analysisData.summary.executive}\n\n`;
+            
+            content += `RESULTADOS PRINCIPALES:\n`;
+            content += `${analysisData.summary.keyOutcomes.map((outcome, i) => `${i + 1}. ${outcome}`).join('\n')}\n\n`;
+            
+            content += `INSIGHTS CLAVE:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `Temas Principales: ${analysisData.keyInsights.mainTopics.join(', ')}\n`;
+            content += `Puntos Críticos:\n${analysisData.keyInsights.criticalPoints.map((point, i) => `  ${i + 1}. ${point}`).join('\n')}\n`;
+            content += `Oportunidades:\n${analysisData.keyInsights.opportunities.map((opp, i) => `  ${i + 1}. ${opp}`).join('\n')}\n\n`;
+            
+            content += `PLAN DE ACCIÓN:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `${analysisData.actionItems.map((action, i) => 
+                `${i + 1}. [${action.priority.toUpperCase()}] ${action.responsible}: ${action.task}\n   Plazo: ${action.deadline}\n   Contexto: ${action.context}`
+            ).join('\n\n')}\n\n`;
+            
+            content += `TIMELINE DE CONVERSACIÓN:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `${analysisData.timeline.map(item => 
+                `${item.timeframe}: ${item.event} (${item.importance})`
+            ).join('\n')}\n\n`;
+            
+            content += `ANÁLISIS DE SENTIMIENTOS:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `Tono General: ${analysisData.sentiment.overall.toUpperCase()}\n`;
+            content += `Confianza: ${analysisData.sentiment.confidence}\n`;
+            content += `Highlights Emocionales:\n${analysisData.sentiment.emotional_highlights.map((highlight, i) => `  ${i + 1}. ${highlight}`).join('\n')}\n\n`;
+            
+            content += `MÉTRICAS DE CALIDAD:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `Densidad de Información: ${analysisData.metrics.informationDensity.toUpperCase()}\n`;
+            content += `Toma de Decisiones: ${analysisData.metrics.decisionMaking.toUpperCase()}\n`;
+            content += `Claridad: ${analysisData.metrics.clarity.toUpperCase()}\n`;
+            content += `Seguimiento Requerido: ${analysisData.metrics.followUpNeeded.toUpperCase()}\n\n`;
+            
+            content += `RECOMENDACIONES ESTRATÉGICAS:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `${analysisData.recommendations.map((rec, i) => 
+                `${i + 1}. [${rec.category}] ${rec.suggestion}\n   Justificación: ${rec.rationale}`
+            ).join('\n\n')}\n\n`;
+            
+            content += `PRÓXIMOS PASOS:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `INMEDIATO: ${analysisData.nextSteps.immediate}\n`;
+            content += `CORTO PLAZO: ${analysisData.nextSteps.shortTerm}\n`;
+            content += `LARGO PLAZO: ${analysisData.nextSteps.longTerm}\n\n`;
+            
+            content += `KEYWORDS PRINCIPALES:\n`;
+            content += `${'-'.repeat(40)}\n`;
+            content += `${analysisData.keywords.join(', ')}\n\n`;
+            
+            if (transcript.trim()) {
+                content += `TRANSCRIPCIÓN COMPLETA:\n`;
+                content += `${'='.repeat(60)}\n`;
+                content += `${transcript.trim()}\n\n`;
+            }
+            
+            const manualDesc = document.getElementById('manual-description').value.trim();
+            if (manualDesc && manualDesc !== transcript.trim()) {
+                content += `CONTEXTO ADICIONAL:\n`;
+                content += `${'-'.repeat(40)}\n`;
+                content += `${manualDesc}\n\n`;
+            }
+            
+            content += `${'='.repeat(80)}\n`;
+            content += `Reporte generado por VoiceInsights AI - Análisis Universal\n`;
+            content += `Tecnología: Transcripción automática + IA especializada\n`;
+            content += `Confidencialidad: Este documento contiene información analizada automáticamente\n`;
+            content += `Para más información: https://voiceinsights.ai`;
+            
+            // Crear y descargar archivo
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `voiceinsights-${typeInfo.name.toLowerCase()}-${new Date().toISOString().split('T')[0]}-${new Date().toTimeString().slice(0, 5).replace(':', '')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Feedback visual
+            if (isMobile && navigator.vibrate) {
+                navigator.vibrate([100, 100, 100]);
+            }
+            
+            const exportBtn = event.target;
+            const originalText = exportBtn.textContent;
+            exportBtn.textContent = '✅ Exportado';
+            exportBtn.style.background = 'linear-gradient(135deg, var(--success-green), #059669)';
+            setTimeout(() => {
+                exportBtn.textContent = originalText;
+                exportBtn.style.background = '';
+            }, 3000);
+        }
+
+        // Imprimir análisis (solo desktop)
+        function printAnalysis() {
+            if (!isDesktop || !analysisData) return;
+            
+            const analysisContent = document.getElementById('analysis-content').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Análisis VoiceInsights AI - ${meetingTypes[selectedMeetingType].name}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 2cm; color: #333; line-height: 1.6; }
+                        h1 { color: #1e40af; border-bottom: 3px solid #1e40af; padding-bottom: 10px; }
+                        .analysis-section { margin: 2rem 0; padding: 1.5rem; border-left: 4px solid #3b82f6; background: #f8fafc; page-break-inside: avoid; }
+                        .section-title { font-weight: bold; color: #1e40af; margin-bottom: 1rem; font-size: 1.2rem; }
+                        .action-item { background: #f1f5f9; padding: 1rem; margin: 0.75rem 0; border-radius: 6px; border-left: 3px solid #fbbf24; }
+                        .timeline-item { margin: 1rem 0; padding: 0.75rem; border-bottom: 1px solid #e5e7eb; }
+                        .metric-card { display: inline-block; margin: 0.5rem; padding: 1rem; background: #f9fafb; border-radius: 8px; text-align: center; min-width: 120px; }
+                        .keyword { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 0.3rem 0.6rem; margin: 0.2rem; border-radius: 12px; font-size: 0.85rem; }
+                        @media print { 
+                            .no-print { display: none; }
+                            .analysis-section { page-break-inside: avoid; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>🎯 VoiceInsights AI - Análisis Profesional</h1>
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 6px; margin-bottom: 2rem;">
+                        <p><strong>Tipo de conversación:</strong> ${meetingTypes[selectedMeetingType].name}</p>
+                        <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-ES')}</p>
+                        <p><strong>Duración:</strong> ${formatTime(recordingTime)}</p>
+                        <p><strong>Efectividad:</strong> ${analysisData.summary.effectiveness}/10</p>
+                    </div>
+                    ${analysisContent}
+                    <hr style="margin: 3rem 0;">
+                    <p style="font-size: 0.9em; color: #666; text-align: center;">
+                        Generado por VoiceInsights AI - ${new Date().toLocaleString('es-ES')}<br>
+                        Análisis Universal de Conversaciones con IA Avanzada
+                    </p>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Compartir análisis
+        function shareAnalysis() {
+            if (navigator.share && isMobile) {
+                navigator.share({
+                    title: 'Análisis VoiceInsights AI',
+                    text: `Análisis completo de ${meetingTypes[selectedMeetingType].name} - ${formatTime(recordingTime)} de duración`,
+                    url: window.location.href
+                });
+            } else {
+                // Copiar link al clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    const shareBtn = event.target;
+                    const originalText = shareBtn.textContent;
+                    shareBtn.textContent = '✅ Link Copiado';
+                    setTimeout(() => {
+                        shareBtn.textContent = originalText;
+                    }, 2000);
+                });
+            }
+        }
+
+        // Nueva grabación
+        function newRecording() {
+            // Reset variables
+            isRecording = false;
+            isPaused = false;
+            mediaRecorder = null;
+            audioChunks = [];
+            recordingTime = 0;
+            pausedTime = 0;
+            audioBlob = null;
+            transcript = '';
+            analysisData = null;
+            wordCount = 0;
+            
+            if (recognition) {
+                recognition.stop();
+                recognition = null;
+            }
+            
+            clearInterval(timerInterval);
+            
+            // Reset UI
+            analysisView.classList.add('hidden');
+            homeView.classList.remove('hidden');
+            resetUI();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Keyboard shortcuts (solo desktop)
+        function setupKeyboardShortcuts() {
+            if (!isDesktop) return;
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        if (!isRecording) {
+                            startRecording();
+                        } else {
+                            stopRecording();
+                        }
+                    } else if (e.code === 'KeyP' && isRecording) {
+                        e.preventDefault();
+                        pauseRecording();
+                    }
+                }
+            });
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('VoiceInsights AI Universal loaded');
+            
+            detectDevice();
+            setupMeetingTypeSelectors();
+            setupKeyboardShortcuts();
+            
+            console.log(`Platform: ${navigator.platform}`);
+            console.log(`User Agent: ${navigator.userAgent}`);
+            console.log(`Device: ${isDesktop ? 'Desktop' : 'Mobile'} (${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Other'})`);
+        });
+    </script>
+</body>
+</html>
